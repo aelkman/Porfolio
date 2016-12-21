@@ -1,0 +1,55 @@
+list_English_Fnt;
+label = list.ALLlabels;
+
+Target = zeros(62992,10);
+
+for i = 1:62992
+        Target(i, label(i)) = 1;
+end
+
+%release valuable memory
+clear label;
+
+
+names = list.ALLnames;
+
+%128*128 == 16384
+Trainset = zeros(62992,1024);
+
+
+for i = 1:62992
+    Trainset(i,:) = reshape(imresize(imread([names(i, :) '.png']), [32 32]), [1 1024]);
+    disp(i);
+end
+
+
+for i = 1:62992
+    Trainset(i,:) = (ones(1,1024)*255 - Trainset(i,:))/255;
+end
+
+kk = randperm(62992);
+
+train_x = Trainset(kk(1:60000),:);
+train_y = Target(kk(1:60000),:);
+
+test_x = Trainset(kk(60001:62992),:);
+test_y = Target(kk(60001:62992),:);
+
+nn = nnsetup([1024, 200, 62]);
+
+nn.activation_function = 'sigm';
+nn.learningRate = 0.2;
+opts.numepochs =  200;
+opts.batchsize = 50;
+opts.momentum = 0.1;
+nn = nntrain(nn, train_x, train_y, opts);
+
+res = nnpredict(nn, test_x);
+
+count = 0;
+for i=1:2992
+    [~,h] = max(test_y(i,:));
+    if res(i) == h
+        count = count+1;
+    end
+end

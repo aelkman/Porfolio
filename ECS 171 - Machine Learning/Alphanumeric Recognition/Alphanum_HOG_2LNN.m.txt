@@ -1,0 +1,96 @@
+function [ error ] = AlphaNum_HOG_2LNN( runCount, hiddenNodes )
+load mnist_uint8;
+
+function f = factors1(n)
+    % vectorized implementation of factors2()
+    f = find(rem(n, 1:floor(sqrt(n))) == 0);
+    f = unique([1, n, f, fix(n./f)]);
+end
+
+function Anorm = normA( A )
+    Anorm = (A - min2(A))/(max2(A) - min2(A));
+end
+
+
+for count = 1:runCount
+    files = subdir('C:\Users\Alex\Documents\MATLAB\char74K\English\Hnd_Resize_100p\*.png');
+%     newData = imread(files(1).name);        %load a file to prealloc HOG_SIZE
+%     [featureVector,hogVisualization] = extractHOGFeatures(newData);
+
+    %ALPHA = 0.01;
+    %HOG_SIZE = size(featureVector,2);
+    HOG_SIZE = 7500;
+    NUM_SAMPLES = length(files);
+    NUM_CLASSIFIER = 62;
+    TRAIN_PCT = 0.95;
+    TEST_PCT = 1-TRAIN_PCT;
+    CLASSIFIER_SET_SIZE = 55;
+    %HIDDEN_NODES = ceil(NUM_SAMPLES/(ALPHA*(NUM_CLASSIFIER + HOG_SIZE*TRAIN_PCT)));
+    HIDDEN_NODES = hiddenNodes;
+
+    s = RandStream.create('mt19937ar','seed',sum(100*clock));
+    RandStream.setGlobalStream(s);
+
+    train_x = zeros(ceil(TRAIN_PCT*NUM_SAMPLES), HOG_SIZE);
+    train_y = zeros(ceil(TRAIN_PCT*NUM_SAMPLES),NUM_CLASSIFIER);
+    test_x = zeros(floor(TEST_PCT*NUM_SAMPLES), HOG_SIZE); 
+    test_y = zeros(floor(TEST_PCT*NUM_SAMPLES),NUM_CLASSIFIER);
+    data = zeros(ceil(NUM_SAMPLES), HOG_SIZE);  %entire data set
+
+% 
+    for i = 1:ceil(NUM_SAMPLES)
+        newData = imread(files(i).name);        %load the file
+        %[featureVector,hogVisualization] = extractHOGFeatures(newData);
+        featureVector = reshape(newData, 7500, size(newData,3));
+        data(i,1:HOG_SIZE) = featureVector;
+        %data(i,HOG_SIZE+1) = ceil(i/CLASSIFIER_SET_SIZE);
+    end
+    
+    data = normA(data);
+    data = abs(data-1);
+    
+    for i = 1:ceil(NUM_SAMPLES)
+        data(i,HOG_SIZE+1) = ceil(i/CLASSIFIER_SET_SIZE);
+    end
+
+    train_x(:,:) = data(1:ceil(TRAIN_PCT*NUM_SAMPLES),1:HOG_SIZE);   %train set gets TRAIN_PCT of the entire data set
+    test_x(:,:) = data(ceil(TRAIN_PCT*NUM_SAMPLES)+1:NUM_SAMPLES,1:HOG_SIZE);
+
+    for i = 1:ceil(TRAIN_PCT*NUM_SAMPLES)
+        train_y(i, data(i,HOG_SIZE+1)) = 1;
+    end
+    train_y = train_y(:,:);
+
+    for i = 1:ceil(TEST_PCT*NUM_SAMPLES)-1
+        test_y(i, data(ceil(TRAIN_PCT*NUM_SAMPLES)+i, HOG_SIZE+1)) = 1;
+    end
+
+
+
+    disp('testing and training data created');
+
+    rand('state',0)
+
+    disp('starting setup');
+    nn = nnsetup([HOG_SIZE HIDDEN_NODES NUM_CLASSIFIER]);
+    disp('setup finished');
+
+    nn.activation_function = 'sigm';    %  Sigmoid activation function
+    nn.learningRate = 1.0;                %  Sigm require a lower learning rate
+    opts.numepochs =  200;                 %  Number of full sweeps through data
+    opts.batchsize = 40;               %  Take a mean gradient step over this many samples
+
+    [~, ~, err, ~, ~]   = nntrain(nn, train_x, train_y, opts, test_x, test_y);
+    %[er, bad] = nntest(nn, test_x, test_y);
+    error = err;
+    plot(err(:,1), 1:200);
+    pause();
+    
+    
+    
+end
+
+
+
+end
+

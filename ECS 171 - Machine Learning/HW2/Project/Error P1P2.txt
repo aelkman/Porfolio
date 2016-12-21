@@ -1,0 +1,43 @@
+epoch 200/200. Took 0.1019 seconds. Mini-batch mean squared error on training set is 0.3018; Full-batch train err = 0.304070
+
+epoch 200/200. Took 0.070497 seconds. Mini-batch mean squared error on training set is 0.29283; Full-batch train err = 0.289321
+
+
+P4: [8 3i 3i 3i 10]
+mserror =
+
+    0.3264    0.2982    0.2704    0.2599
+    
+ferror =
+
+    0.3133    0.2918    0.2608    0.2444
+    
+    [8 3i 3i 10]
+    
+ mserror =
+
+    0.3062    0.2877    0.2657    0.2412
+    
+ ferror =
+
+    0.2936    0.2679    0.3008    0.2337
+    
+    [8 3i 10]
+    
+mserror =
+
+    0.3018    0.2818    0.2679    0.2664
+
+>> ferror
+
+ferror =
+
+    0.3041    0.2690    0.2533    0.2597
+    
+P5:
+
+>> nn.a{3}
+
+ans =
+
+    0.0440    0.1228    0.0028    0.7970    0.0219    0.0006    0.0033    0.0223    0.0040    0.0007

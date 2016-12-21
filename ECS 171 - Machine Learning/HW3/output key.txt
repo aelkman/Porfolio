@@ -1,0 +1,44 @@
+Strain
+
+MG1655 - 1
+W3110 - 2
+P4X - 3
+BW25113 - 4
+P2 - 5
+rpoA14 - 6
+rpoA27 - 7
+rpoD3 - 8
+DH5alpha - 9
+CG2 - 10
+
+Medium
+
+MD001 - 1
+MD002 - 2
+MD003 - 3
+MD004 - 4
+.....
+MD017 - 17
+
+Stress
+
+none - 1
+O2-starvation - 2
+Indole - 3
+carbon-limitation - 4
+zinc-limitation - 5
+antibacterial - 6
+RP-overexpress - 7
+
+GenePerturb
+
+oxyR_KO - 1
+soxS_KO - 2
+na_WT - 3
+arcA_KO - 4
+fnr_KO - 5
+appY_KO- 6
+argR_KO - 7
+cya_KO - 8
+rpoS_KO - 9
+frdC_KO - 10
