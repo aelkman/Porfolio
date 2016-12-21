@@ -1,0 +1,1 @@
+Purpose of the experiment was to collect raw data from the DAC on the radiometer board and then perform proper equations and analyze the data with MATLAB
